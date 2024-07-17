@@ -13,10 +13,12 @@ public class PlayerMovement : MonoBehaviour
     private int _currentY;
     private MoveDirection _direction;
     
+    
     private void Start()
     {
         GameGrid.GridHasBeenDrawn += OnGridHasBeenDrawn;
         _direction = MoveDirection.Up;
+        
     }
     
     private void OnGridHasBeenDrawn()
@@ -34,6 +36,26 @@ public class PlayerMovement : MonoBehaviour
     {
         _direction = GetMoveDirection();
         Move(_direction);
+        GetTouchPosition();
+    }
+
+    private void GetTouchPosition() //TODO: from this angle determine direction
+    {
+        Touch touch;
+        if (Input.touchCount > 0)
+        {
+            touch = Input.GetTouch(0);
+            
+            Vector2 touchPos = new Vector2(touch.position.x, touch.position.y);
+            Vector2 point = Camera.main.ScreenToWorldPoint (touchPos);
+            
+            Vector2 ownPos = new Vector2(transform.position.x, transform.position.y);
+            Vector2 touchDirection = point - ownPos;
+            Vector2 rightVector = new Vector2(1, transform.position.y);
+            float angle = Vector2.SignedAngle(touchDirection, rightVector);
+           
+            Debug.Log("angle : " + angle);
+        }
     }
     
     private MoveDirection GetMoveDirection()

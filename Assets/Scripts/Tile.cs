@@ -7,4 +7,5 @@ public class Tile : MonoBehaviour
 {
     public int GridX { get; set; }
     public int GridY { get; set; }
+    
 }

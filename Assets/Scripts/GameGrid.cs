@@ -40,6 +40,7 @@ public class GameGrid : MonoBehaviour
             {
                 GameObject newTile =  Instantiate(tile, tilePos, quaternion.identity);
                 newTile.GetComponentInChildren<TextMeshPro>().text = x + "/" + y;
+                newTile.name = "Tile: " + x + "/" +y;
                 Tile tileComponent = newTile.GetComponent<Tile>();
                 tileComponent.GridX = x;
                 tileComponent.GridY = y;

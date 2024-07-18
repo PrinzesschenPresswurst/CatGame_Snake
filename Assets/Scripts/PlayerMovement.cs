@@ -8,17 +8,16 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float moveTimerInterval = 1f;
     private float _moveTimer;
-    private Tile _currentTile;
+    public  Tile _currentTile { get; set; }
     private int _currentX;
     private int _currentY;
     private MoveDirection _direction;
-    
+    public static event Action PlayerWasSetUp;
     
     private void Start()
     {
         GameGrid.GridHasBeenDrawn += OnGridHasBeenDrawn;
         _direction = MoveDirection.Up;
-        
     }
     
     private void OnGridHasBeenDrawn()
@@ -30,35 +29,55 @@ public class PlayerMovement : MonoBehaviour
     {
         _currentTile = GameGrid.GridArray[0, 0];
         transform.position = _currentTile.transform.position;
+        if (PlayerWasSetUp != null)
+            PlayerWasSetUp.Invoke();
     }
 
     private void Update()
     {
-        _direction = GetMoveDirection();
-        Move(_direction);
-        GetTouchPosition();
-    }
+        _direction = GetMoveDirectionFromKeys();
 
-    private void GetTouchPosition() //TODO: from this angle determine direction
-    {
-        Touch touch;
         if (Input.touchCount > 0)
         {
-            touch = Input.GetTouch(0);
-            
-            Vector2 touchPos = new Vector2(touch.position.x, touch.position.y);
-            Vector2 point = Camera.main.ScreenToWorldPoint (touchPos);
-            
-            Vector2 ownPos = new Vector2(transform.position.x, transform.position.y);
-            Vector2 touchDirection = point - ownPos;
-            Vector2 rightVector = new Vector2(1, transform.position.y);
-            float angle = Vector2.SignedAngle(touchDirection, rightVector);
-           
-            Debug.Log("angle : " + angle);
+            float angle = GetTouchAngle();
+            _direction = GetDirectionFromTouch(angle);
         }
+        
+        Move(_direction);
+    }
+
+    private float GetTouchAngle() 
+    {
+        Touch touch = Input.GetTouch(0);
+        Vector2 touchPos = new Vector2(touch.position.x, touch.position.y);
+        Vector2 point = Camera.main.ScreenToWorldPoint (touchPos);
+        Vector2 ownPos = transform.position;
+        
+        Vector2 touchDirection = point - ownPos;
+        Vector2 rightVector = new Vector2(1, ownPos.y);
+        return Vector2.SignedAngle(touchDirection, rightVector);
+    }
+
+    private MoveDirection GetDirectionFromTouch(float angle)
+    {
+        if (angle > -45 && angle < 45)
+            return MoveDirection.Up;
+            
+        if (angle > -135 && angle < 45)
+            return MoveDirection.Left;
+        
+        if (angle > 45 && angle < 135)
+            return MoveDirection.Right;
+        
+        if (angle > 135 && angle < 180)
+            return MoveDirection.Down;
+        if (angle > -135 && angle < -180)
+            return MoveDirection.Down;
+        
+        return _direction;
     }
     
-    private MoveDirection GetMoveDirection()
+    private MoveDirection GetMoveDirectionFromKeys()
     {
         if (Input.GetKey(KeyCode.UpArrow))
             return MoveDirection.Up;
@@ -105,7 +124,7 @@ public class PlayerMovement : MonoBehaviour
         transform.position = _currentTile.transform.position;
     }
     
-    enum MoveDirection 
+    private enum MoveDirection 
     {
         Left, 
         Right, 

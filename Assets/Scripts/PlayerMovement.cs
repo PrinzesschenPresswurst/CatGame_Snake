@@ -8,11 +8,12 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float moveTimerInterval = 1f;
     private float _moveTimer;
-    public  Tile _currentTile { get; set; }
     private int _currentX;
     private int _currentY;
     private MoveDirection _direction;
-    public static event Action PlayerWasSetUp;
+    
+    public Tile CurrentTile { get; private set; }
+    public static event Action PlayerMoves;
     
     private void Start()
     {
@@ -27,23 +28,41 @@ public class PlayerMovement : MonoBehaviour
 
     private void SetStartPos()
     {
-        _currentTile = GameGrid.GridArray[0, 0];
-        transform.position = _currentTile.transform.position;
-        if (PlayerWasSetUp != null)
-            PlayerWasSetUp.Invoke();
+        CurrentTile = GameGrid.GridArray[0, 0];
+        transform.position = CurrentTile.transform.position;
     }
 
     private void Update()
     {
+        RunMoveTimer();
+        GetDirection();
+        
+        if (_moveTimer < moveTimerInterval)
+            return;
+        _moveTimer = 0;
+        
+        MovePlayer(_direction);
+        
+        if (PlayerMoves != null) //MoveBody
+            PlayerMoves.Invoke();
+    }
+    
+    private void RunMoveTimer()
+    {
+        _moveTimer += Time.deltaTime;
+    }
+    
+    private void GetDirection()
+    {
+        //for keys
         _direction = GetMoveDirectionFromKeys();
 
+        //for touch
         if (Input.touchCount > 0)
         {
             float angle = GetTouchAngle();
             _direction = GetDirectionFromTouch(angle);
         }
-        
-        Move(_direction);
     }
 
     private float GetTouchAngle() 
@@ -93,36 +112,32 @@ public class PlayerMovement : MonoBehaviour
         return _direction;
     }
 
-    private void Move(MoveDirection direction)
+    private void MovePlayer(MoveDirection direction)
     {
-        _moveTimer += Time.deltaTime;
-        if (_moveTimer < moveTimerInterval)
-            return;
-        _moveTimer = 0;
-        
         switch (direction)
         {
             case MoveDirection.Up:
-                if (_currentTile.GridY < GameGrid.GridArray.GetLength(1) - 1)
+                if (CurrentTile.GridY < GameGrid.GridArray.GetLength(1) - 1)
                     _currentY++;
                 break;
             case MoveDirection.Down:
-                if (_currentTile.GridY > 0)
+                if (CurrentTile.GridY > 0)
                     _currentY--;
                 break;
             case MoveDirection.Left:
-                if (_currentTile.GridX > 0)
+                if (CurrentTile.GridX > 0)
                     _currentX--;
                 break;
             case MoveDirection.Right:
-                if (_currentTile.GridX < GameGrid.GridArray.GetLength(0) - 1)
+                if (CurrentTile.GridX < GameGrid.GridArray.GetLength(0) - 1)
                     _currentX++;
                 break;
         }
         
-        _currentTile = GameGrid.GridArray[_currentX, _currentY];
-        transform.position = _currentTile.transform.position;
+        CurrentTile = GameGrid.GridArray[_currentX, _currentY];
+        transform.position = CurrentTile.transform.position;
     }
+    
     
     private enum MoveDirection 
     {

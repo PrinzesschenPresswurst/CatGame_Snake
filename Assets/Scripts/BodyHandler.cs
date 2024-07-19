@@ -7,28 +7,30 @@ using UnityEngine;
 public class BodyHandler : MonoBehaviour
 {
     [SerializeField] private GameObject body;
-    public static GameObject LastBody { get; set; }
-    public static Tile LastBodyTile { get; set; }
+    private GameObject _lastBody;
     private int _bodyNumber;
+    private bool _isFirstBody;
+    
     private void Start()
     {
         Treat.TreatWasCollected += OnTreatWasCollected;
-        PlayerMovement.PlayerWasSetUp += OnPlayerWasSetUp;
         _bodyNumber = 1;
-    }
-
-    private void OnPlayerWasSetUp()
-    {
-        LastBody = FindObjectOfType<PlayerMovement>().gameObject;
-        LastBodyTile = FindObjectOfType<PlayerMovement>()._currentTile;
+        _isFirstBody = true;
     }
     
     private void OnTreatWasCollected()
     {
-        GameObject newBody = Instantiate(body, LastBody.transform.position, quaternion.identity);
-        newBody.GetComponent<Body>().Parent = LastBody;
+        if (_isFirstBody)
+        {
+            PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+            _lastBody = playerMovement.gameObject;
+            _isFirstBody = false;
+        }
+        
+        GameObject newBody = Instantiate(body, _lastBody.transform.position, quaternion.identity);
+        newBody.GetComponent<Body>().Parent = _lastBody;
         newBody.name = "Body: " + _bodyNumber;
         _bodyNumber++;
-        LastBody = newBody;
+        _lastBody = newBody;
     }
 }

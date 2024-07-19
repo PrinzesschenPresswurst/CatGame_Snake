@@ -8,10 +8,20 @@ public class Body : MonoBehaviour
     public GameObject Parent { get; set; }
     private Tile _currentTile;
     private Tile _parentTile;
+    private PlayerMovement _playerMovement;
+    private Body _body;
+    private bool _parentIsPlayer;
     
     private void Start()
     {
         PlayerMovement.PlayerMoves += MoveBody;
+        
+        _playerMovement = Parent.GetComponent<PlayerMovement>();
+        _body = Parent.GetComponent<Body>();
+        
+        if (_playerMovement != null)
+            _parentIsPlayer = true;
+        
         GetParentTile();
     }
 
@@ -24,9 +34,9 @@ public class Body : MonoBehaviour
 
     private void GetParentTile()
     {
-        if (Parent.GetComponent<PlayerMovement>() != null)
-            _parentTile = Parent.GetComponent<PlayerMovement>().CurrentTile;
-        else 
-            _parentTile = Parent.GetComponent<Body>()._currentTile;
+        if (_parentIsPlayer)
+            _parentTile = PlayerMovement.CurrentTile;
+        else
+            _parentTile = _body._currentTile;
     }
 }

@@ -4,21 +4,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour //ToDo split up this horrible class 
 {
     [SerializeField] private float moveTimerInterval = 1f;
     private float _moveTimer;
     private int _currentX;
     private int _currentY;
     private MoveDirection _direction;
+    private bool _playerIsDead;
+    private Camera _cam;
     
-    public Tile CurrentTile { get; private set; }
+    public static Tile CurrentTile { get; private set; }
     public static event Action PlayerMoves;
     
     private void Start()
     {
         GameGrid.GridHasBeenDrawn += OnGridHasBeenDrawn;
         _direction = MoveDirection.Up;
+        _cam = Camera.main;
     }
     
     private void OnGridHasBeenDrawn()
@@ -34,6 +37,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (_playerIsDead)
+            return;
+        
         RunMoveTimer();
         GetDirection();
         
@@ -69,7 +75,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Touch touch = Input.GetTouch(0);
         Vector2 touchPos = new Vector2(touch.position.x, touch.position.y);
-        Vector2 point = Camera.main.ScreenToWorldPoint (touchPos);
+        Vector2 point = _cam.ScreenToWorldPoint (touchPos);
         Vector2 ownPos = transform.position;
         
         Vector2 touchDirection = point - ownPos;
@@ -79,18 +85,18 @@ public class PlayerMovement : MonoBehaviour
 
     private MoveDirection GetDirectionFromTouch(float angle)
     {
-        if (angle > -45 && angle < 45)
+        if (angle is > -45 and < 45)
             return MoveDirection.Up;
             
-        if (angle > -135 && angle < 45)
+        if (angle is > -135 and < 45)
             return MoveDirection.Left;
         
-        if (angle > 45 && angle < 135)
+        if (angle is > 45 and < 135)
             return MoveDirection.Right;
         
-        if (angle > 135 && angle < 180)
+        if (angle is > 135 and < 180)
             return MoveDirection.Down;
-        if (angle > -135 && angle < -180)
+        if (angle is < -135 and > -180)
             return MoveDirection.Down;
         
         return _direction;
@@ -114,30 +120,54 @@ public class PlayerMovement : MonoBehaviour
 
     private void MovePlayer(MoveDirection direction)
     {
+        if (CheckDeath(direction))
+        {
+            _playerIsDead = true;
+            return;
+        }
+        
         switch (direction)
         {
             case MoveDirection.Up:
-                if (CurrentTile.GridY < GameGrid.GridArray.GetLength(1) - 1)
-                    _currentY++;
+                _currentY++;
                 break;
             case MoveDirection.Down:
-                if (CurrentTile.GridY > 0)
-                    _currentY--;
+                _currentY--;
                 break;
             case MoveDirection.Left:
-                if (CurrentTile.GridX > 0)
-                    _currentX--;
+                _currentX--;
                 break;
             case MoveDirection.Right:
-                if (CurrentTile.GridX < GameGrid.GridArray.GetLength(0) - 1)
-                    _currentX++;
+                _currentX++;
                 break;
         }
-        
         CurrentTile = GameGrid.GridArray[_currentX, _currentY];
         transform.position = CurrentTile.transform.position;
     }
-    
+
+    private bool CheckDeath(MoveDirection direction)
+    { 
+        switch (direction) 
+        { 
+            case MoveDirection.Up:
+                if (CurrentTile.GridY == GameGrid.GridArray.GetLength(1) - 1)
+                    return true;
+                break;
+            case MoveDirection.Down:
+                if (CurrentTile.GridY == 0)
+                    return true;
+                break;
+            case MoveDirection.Left:
+                if (CurrentTile.GridX == 0)
+                    return true;
+                break;
+            case MoveDirection.Right:
+                if (CurrentTile.GridX == GameGrid.GridArray.GetLength(0) - 1)
+                    return true;
+                break;
+        }
+        return false;
+    }
     
     private enum MoveDirection 
     {

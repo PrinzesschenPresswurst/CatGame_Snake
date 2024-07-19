@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 public class FoodSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject treat;
-    public static Tile _spawnTile { get; set; }
+    private static Tile _spawnTile;
 
     private void Start()
     {

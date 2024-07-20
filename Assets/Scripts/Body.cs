@@ -1,42 +1,52 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Body : MonoBehaviour
 {
-    public GameObject Parent { get; set; }
-    private Tile _currentTile;
+    public Tile CurrentTile { get; private set; }
+    private GameObject _parent;
     private Tile _parentTile;
-    private PlayerMovement _playerMovement;
-    private Body _body;
+    [CanBeNull] private PlayerMovement _playerMovement;
+    [CanBeNull] private Body _body;
     private bool _parentIsPlayer;
-    
+
+    private void Awake()
+    {
+        _parent = BodyHandler._lastBody;
+    }
+
     private void Start()
     {
         PlayerMovement.PlayerMoves += MoveBody;
-        
-        _playerMovement = Parent.GetComponent<PlayerMovement>();
-        _body = Parent.GetComponent<Body>();
-        
+        _playerMovement = _parent.GetComponent<PlayerMovement>();
+        _body = _parent.GetComponent<Body>();
+
+        CheckIfThisIsFirstBody();
+        GetParentTile();
+    }
+
+    private void CheckIfThisIsFirstBody()
+    {
         if (_playerMovement != null)
             _parentIsPlayer = true;
-        
-        GetParentTile();
     }
-
-    private void MoveBody()
-    {
-        _currentTile = GameGrid.GridArray[_parentTile.GridX, _parentTile.GridY];
-        transform.position = _currentTile.transform.position;
-        GetParentTile();
-    }
-
+    
     private void GetParentTile()
     {
         if (_parentIsPlayer)
             _parentTile = PlayerMovement.CurrentTile;
         else
-            _parentTile = _body._currentTile;
+            _parentTile = _body.CurrentTile;
+    }
+
+    private void MoveBody()
+    {
+        CurrentTile = GameGrid.GridArray[_parentTile.GridX, _parentTile.GridY];
+        transform.position = CurrentTile.transform.position;
+        GetParentTile();
     }
 }

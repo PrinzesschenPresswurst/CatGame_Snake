@@ -30,9 +30,28 @@ public class FoodSpawner : MonoBehaviour
 
     private void PickTreatPosition()
     {
-        int randomX = Random.Range(0, GameGrid.GridArray.GetLength(0));
-        int randomY = Random.Range(0, GameGrid.GridArray.GetLength(1));
-        _spawnTile = GameGrid.GridArray[randomX, randomY];
+        do
+        {
+            int randomX = Random.Range(0, GameGrid.GridArray.GetLength(0));
+            int randomY = Random.Range(0, GameGrid.GridArray.GetLength(1));
+            _spawnTile = GameGrid.GridArray[randomX, randomY];
+            
+        } while (CheckIfPositionIsOccupied());
+       
+    }
+
+    private bool CheckIfPositionIsOccupied()
+    {
+        if (BodyHandler.bodyList != null)
+        {
+            foreach (var body in BodyHandler.bodyList)
+            {
+                if (_spawnTile == body.CurrentTile)
+                    return true;
+            }
+        }
+        
+        return false;
     }
     
     private void SpawnTreat()

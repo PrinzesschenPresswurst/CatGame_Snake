@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class PlayerMovement : MonoBehaviour //ToDo split up this horrible class 
+public class PlayerMovement : MonoBehaviour //ToDo split up this class into input and move - its too big
 {
     [SerializeField] private float moveTimerInterval = 1f;
     private float _moveTimer;
@@ -104,17 +104,18 @@ public class PlayerMovement : MonoBehaviour //ToDo split up this horrible class
     
     private MoveDirection GetMoveDirectionFromKeys()
     {
-        if (Input.GetKey(KeyCode.UpArrow))
+        if (Input.GetKey(KeyCode.UpArrow) && _direction != MoveDirection.Down)
             return MoveDirection.Up;
             
-        else if (Input.GetKey(KeyCode.DownArrow))
+        if (Input.GetKey(KeyCode.DownArrow) && _direction != MoveDirection.Up)
             return MoveDirection.Down;
         
-        else if (Input.GetKey(KeyCode.LeftArrow))
+        if (Input.GetKey(KeyCode.LeftArrow) && _direction != MoveDirection.Right)
             return MoveDirection.Left;
         
-        else if (Input.GetKey(KeyCode.RightArrow))
+        if (Input.GetKey(KeyCode.RightArrow) && _direction != MoveDirection.Left)
             return MoveDirection.Right;
+        
         return _direction;
     }
 

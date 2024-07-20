@@ -7,15 +7,17 @@ using UnityEngine;
 public class BodyHandler : MonoBehaviour
 {
     [SerializeField] private GameObject body;
-    private GameObject _lastBody;
+    public static GameObject _lastBody;
     private int _bodyNumber;
     private bool _isFirstBody;
+    public static List<Body> bodyList;
     
     private void Start()
     {
         Treat.TreatWasCollected += OnTreatWasCollected;
         _bodyNumber = 1;
         _isFirstBody = true;
+        bodyList = new List<Body>();
     }
     
     private void OnTreatWasCollected()
@@ -28,8 +30,10 @@ public class BodyHandler : MonoBehaviour
         }
         
         GameObject newBody = Instantiate(body, _lastBody.transform.position, quaternion.identity);
-        newBody.GetComponent<Body>().Parent = _lastBody;
+        //newBody.GetComponent<Body>().Parent = _lastBody;
         newBody.name = "Body: " + _bodyNumber;
+        bodyList.Add(newBody.GetComponent<Body>());
+        
         _bodyNumber++;
         _lastBody = newBody;
     }

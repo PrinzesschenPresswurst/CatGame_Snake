@@ -42,9 +42,9 @@ public class FoodSpawner : MonoBehaviour
 
     private bool CheckIfPositionIsOccupied()
     {
-        if (BodyHandler.bodyList != null)
+        if (BodyHandler.BodyList != null)
         {
-            foreach (var body in BodyHandler.bodyList)
+            foreach (var body in BodyHandler.BodyList)
             {
                 if (_spawnTile == body.CurrentTile)
                     return true;

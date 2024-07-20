@@ -13,15 +13,15 @@ public class Body : MonoBehaviour
     [CanBeNull] private PlayerMovement _playerMovement;
     [CanBeNull] private Body _body;
     private bool _parentIsPlayer;
-
+    
     private void Awake()
     {
-        _parent = BodyHandler._lastBody;
+        _parent = BodyHandler.LastBody;
     }
 
     private void Start()
     {
-        PlayerMovement.PlayerMoves += MoveBody;
+        PlayerMovement.PlayerMoved += MovedBody;
         _playerMovement = _parent.GetComponent<PlayerMovement>();
         _body = _parent.GetComponent<Body>();
 
@@ -43,7 +43,7 @@ public class Body : MonoBehaviour
             _parentTile = _body.CurrentTile;
     }
 
-    private void MoveBody()
+    private void MovedBody()
     {
         CurrentTile = GameGrid.GridArray[_parentTile.GridX, _parentTile.GridY];
         transform.position = CurrentTile.transform.position;

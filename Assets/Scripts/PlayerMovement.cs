@@ -11,11 +11,11 @@ public class PlayerMovement : MonoBehaviour //ToDo split up this class into inpu
     private int _currentX;
     private int _currentY;
     private MoveDirection _direction;
-    private bool _playerIsDead;
     private Camera _cam;
     
     public static Tile CurrentTile { get; private set; }
-    public static event Action PlayerMoves;
+    public static event Action PlayerMoved;
+    public static event Action PlayerCrashedInWall; 
     
     private void Start()
     {
@@ -37,7 +37,7 @@ public class PlayerMovement : MonoBehaviour //ToDo split up this class into inpu
 
     private void Update()
     {
-        if (_playerIsDead)
+        if (PlayerDeathHandler.PlayerIsDead)
             return;
         
         RunMoveTimer();
@@ -49,8 +49,8 @@ public class PlayerMovement : MonoBehaviour //ToDo split up this class into inpu
         
         MovePlayer(_direction);
         
-        if (PlayerMoves != null) //MoveBody
-            PlayerMoves.Invoke();
+        if (PlayerMoved != null) //MoveBody
+            PlayerMoved.Invoke();
     }
     
     private void RunMoveTimer()
@@ -85,20 +85,18 @@ public class PlayerMovement : MonoBehaviour //ToDo split up this class into inpu
 
     private MoveDirection GetDirectionFromTouch(float angle)
     {
-        if (angle is > -45 and < 45)
-            return MoveDirection.Up;
-            
-        if (angle is > -135 and < 45)
-            return MoveDirection.Left;
-        
-        if (angle is > 45 and < 135)
-            return MoveDirection.Right;
-        
-        if (angle is > 135 and < 180)
-            return MoveDirection.Down;
-        if (angle is < -135 and > -180)
-            return MoveDirection.Down;
-        
+        switch (angle)
+        {
+            case > -45 and < 45:
+                return MoveDirection.Up; 
+            case > -135 and < 45:
+                return MoveDirection.Left;
+            case > 45 and < 135:
+                return MoveDirection.Right;
+            case > 135 and < 180:
+            case < -135 and > -180:
+                return MoveDirection.Down;
+        }
         return _direction;
     }
     
@@ -123,7 +121,8 @@ public class PlayerMovement : MonoBehaviour //ToDo split up this class into inpu
     {
         if (CheckDeath(direction))
         {
-            _playerIsDead = true;
+            if (PlayerCrashedInWall != null)
+                PlayerCrashedInWall.Invoke();
             return;
         }
         

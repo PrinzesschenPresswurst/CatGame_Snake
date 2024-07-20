@@ -7,17 +7,18 @@ using UnityEngine;
 public class BodyHandler : MonoBehaviour
 {
     [SerializeField] private GameObject body;
-    public static GameObject _lastBody;
     private int _bodyNumber;
     private bool _isFirstBody;
-    public static List<Body> bodyList;
+    
+    public static GameObject LastBody { get; private set;}
+    public static List<Body> BodyList { get; private set; }
     
     private void Start()
     {
         Treat.TreatWasCollected += OnTreatWasCollected;
         _bodyNumber = 1;
         _isFirstBody = true;
-        bodyList = new List<Body>();
+        BodyList = new List<Body>();
     }
     
     private void OnTreatWasCollected()
@@ -25,16 +26,15 @@ public class BodyHandler : MonoBehaviour
         if (_isFirstBody)
         {
             PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
-            _lastBody = playerMovement.gameObject;
+            LastBody = playerMovement.gameObject;
             _isFirstBody = false;
         }
         
-        GameObject newBody = Instantiate(body, _lastBody.transform.position, quaternion.identity);
-        //newBody.GetComponent<Body>().Parent = _lastBody;
+        GameObject newBody = Instantiate(body, LastBody.transform.position, quaternion.identity);
         newBody.name = "Body: " + _bodyNumber;
-        bodyList.Add(newBody.GetComponent<Body>());
+        BodyList.Add(newBody.GetComponent<Body>());
         
         _bodyNumber++;
-        _lastBody = newBody;
+        LastBody = newBody;
     }
 }

@@ -5,10 +5,9 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 public class Treat : MonoBehaviour
-{
+{ 
     public static event Action TreatWasCollected;
-
-   private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (TreatWasCollected != null)
             TreatWasCollected.Invoke();

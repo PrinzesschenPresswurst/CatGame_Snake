@@ -22,6 +22,7 @@ public class Body : MonoBehaviour
     private void Start()
     {
         PlayerMovement.PlayerMoved += MovedBody;
+        PlayerDeathHandler.PlayerDied += OnPlayerDied;
         _playerMovement = _parent.GetComponent<PlayerMovement>();
         _body = _parent.GetComponent<Body>();
 
@@ -48,5 +49,11 @@ public class Body : MonoBehaviour
         CurrentTile = GameGrid.GridArray[_parentTile.GridX, _parentTile.GridY];
         transform.position = CurrentTile.transform.position;
         GetParentTile();
+    }
+
+    private void OnPlayerDied()
+    {
+        PlayerMovement.PlayerMoved -= MovedBody;
+        PlayerDeathHandler.PlayerDied -= OnPlayerDied;
     }
 }

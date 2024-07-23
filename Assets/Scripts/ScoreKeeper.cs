@@ -11,6 +11,7 @@ public class ScoreKeeper : MonoBehaviour
     private void Start()
     {
         Treat.TreatWasCollected += OnTreatWasCollected;
+        PlayerDeathHandler.PlayerDied += OnPlayerDied;
         _score = 0;
         UpdateScore();
     }
@@ -24,6 +25,12 @@ public class ScoreKeeper : MonoBehaviour
     {
         _score++;
         UpdateScore();
+    }
+
+    private void OnPlayerDied()
+    {
+        Treat.TreatWasCollected -= OnTreatWasCollected;
+        PlayerDeathHandler.PlayerDied -= OnPlayerDied;
     }
     
 }

@@ -5,11 +5,10 @@ using UnityEngine;
 
 public class PlayerDeathHandler : MonoBehaviour
 {
-   public static bool PlayerIsDead { get; private set; }
+   public static event Action PlayerDied ;
 
    private void Start()
    {
-      PlayerIsDead = false;
       PlayerMovement.PlayerCrashedInWall += OnPlayerCrashedInWall;
       PlayerCollisionHandler.PlayerCrashedInBody += OnPlayerCrashedInBody;
    }
@@ -25,7 +24,7 @@ public class PlayerDeathHandler : MonoBehaviour
 
    private void SetPlayerDead()
    {
-      PlayerIsDead = true;
+      PlayerDied?.Invoke();
    }
    
 }

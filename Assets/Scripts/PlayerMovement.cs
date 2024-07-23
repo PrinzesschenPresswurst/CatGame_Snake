@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class PlayerMovement : MonoBehaviour //ToDo split up this class into input and move - its too big
+public class PlayerMovement : MonoBehaviour 
 {
     [SerializeField] private float moveTimerInterval = 1f;
     private float _moveTimer;
     private int _currentX;
     private int _currentY;
+    private bool _stopMovement;
 
     private static  PlayerInput.MoveDirection _direction;
     
@@ -20,9 +21,9 @@ public class PlayerMovement : MonoBehaviour //ToDo split up this class into inpu
     
     private void Start()
     {
+        _stopMovement = false;
         GameGrid.GridHasBeenDrawn += OnGridHasBeenDrawn;
-        //_direction = MoveDirection.Up;
-       
+        PlayerDeathHandler.PlayerDied += OnPlayerDied;
     }
     
     private void OnGridHasBeenDrawn()
@@ -38,11 +39,11 @@ public class PlayerMovement : MonoBehaviour //ToDo split up this class into inpu
 
     private void Update()
     {
-        if (PlayerDeathHandler.PlayerIsDead)
+        if (_stopMovement)
             return;
         
         RunMoveTimer();
-         _direction = PlayerInput.GetDirection(this.gameObject);
+        _direction = PlayerInput.GetDirection(this.gameObject);
         
         if (_moveTimer < moveTimerInterval)
             return;
@@ -111,5 +112,12 @@ public class PlayerMovement : MonoBehaviour //ToDo split up this class into inpu
                 break;
         }
         return false;
+    }
+
+    private void OnPlayerDied()
+    {
+        _stopMovement = true;
+        GameGrid.GridHasBeenDrawn -= OnGridHasBeenDrawn;
+        PlayerDeathHandler.PlayerDied -= OnPlayerDied;
     }
 }

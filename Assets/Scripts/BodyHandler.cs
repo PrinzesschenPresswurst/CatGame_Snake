@@ -16,6 +16,7 @@ public class BodyHandler : MonoBehaviour
     private void Start()
     {
         Treat.TreatWasCollected += OnTreatWasCollected;
+        PlayerDeathHandler.PlayerDied += OnPlayerDied;
         _bodyNumber = 1;
         _isFirstBody = true;
         BodyList = new List<Body>();
@@ -36,5 +37,11 @@ public class BodyHandler : MonoBehaviour
         
         _bodyNumber++;
         LastBody = newBody;
+    }
+
+    private void OnPlayerDied()
+    {
+        Treat.TreatWasCollected -= OnTreatWasCollected;
+        PlayerDeathHandler.PlayerDied -= OnPlayerDied;
     }
 }

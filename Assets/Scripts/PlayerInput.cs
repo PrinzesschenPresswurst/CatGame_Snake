@@ -8,7 +8,6 @@ public class PlayerInput : MonoBehaviour
     private static MoveDirection _direction;
     private static Camera _cam;
     
-    
     private PlayerIputActions _controls;
     private Vector2 _swipeVector;
     
@@ -16,7 +15,7 @@ public class PlayerInput : MonoBehaviour
     private void Start()
     {
         _direction = MoveDirection.Up;
-        _cam = Camera.main;
+        //_cam = Camera.main;
         
         _controls = new PlayerIputActions();
         _controls.Enable();
@@ -60,21 +59,25 @@ public class PlayerInput : MonoBehaviour
         }
     }
     
+    public static MoveDirection GetDirection(GameObject player)
+    {
+        return _direction;
+    }
 
+    /*
     public static MoveDirection GetDirection(GameObject player)
     {
         //for keys
-        _direction = GetMoveDirectionFromKeys();
+       // _direction = GetMoveDirectionFromKeys();
 
         //for touch
-        /*
+        
         if (Input.touchCount > 0)
         {
             float angle = GetTouchAngle(player);
             _direction = GetDirectionFromTouch(angle);
         }
-        */
-
+        
         return _direction;
     }
 
@@ -123,6 +126,7 @@ public class PlayerInput : MonoBehaviour
         
         return _direction;
     }
+    */
     
     public enum MoveDirection 
     {

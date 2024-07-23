@@ -14,6 +14,7 @@ public class FoodSpawner : MonoBehaviour
     {
         GameGrid.GridHasBeenDrawn += OnGridHasBeenDrawn;
         Treat.TreatWasCollected += OnTreatWasCollected;
+        PlayerDeathHandler.PlayerDied += OnPlayerDied;
     }
 
     private void OnGridHasBeenDrawn()
@@ -57,5 +58,12 @@ public class FoodSpawner : MonoBehaviour
     private void SpawnTreat()
     {
         Instantiate(treat, _spawnTile.transform.position, quaternion.identity);
+    }
+
+    private void OnPlayerDied()
+    {
+        GameGrid.GridHasBeenDrawn -= OnGridHasBeenDrawn;
+        Treat.TreatWasCollected -= OnTreatWasCollected;
+        PlayerDeathHandler.PlayerDied -= OnPlayerDied;
     }
 }

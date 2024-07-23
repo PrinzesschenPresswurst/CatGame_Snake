@@ -10,8 +10,9 @@ public class PlayerMovement : MonoBehaviour //ToDo split up this class into inpu
     private float _moveTimer;
     private int _currentX;
     private int _currentY;
-    private MoveDirection _direction;
-    private Camera _cam;
+
+    private static  PlayerInput.MoveDirection _direction;
+    
     
     public static Tile CurrentTile { get; private set; }
     public static event Action PlayerMoved;
@@ -20,8 +21,8 @@ public class PlayerMovement : MonoBehaviour //ToDo split up this class into inpu
     private void Start()
     {
         GameGrid.GridHasBeenDrawn += OnGridHasBeenDrawn;
-        _direction = MoveDirection.Up;
-        _cam = Camera.main;
+        //_direction = MoveDirection.Up;
+       
     }
     
     private void OnGridHasBeenDrawn()
@@ -41,7 +42,7 @@ public class PlayerMovement : MonoBehaviour //ToDo split up this class into inpu
             return;
         
         RunMoveTimer();
-        GetDirection();
+         _direction = PlayerInput.GetDirection(this.gameObject);
         
         if (_moveTimer < moveTimerInterval)
             return;
@@ -58,66 +59,9 @@ public class PlayerMovement : MonoBehaviour //ToDo split up this class into inpu
         _moveTimer += Time.deltaTime;
     }
     
-    private void GetDirection()
-    {
-        //for keys
-        _direction = GetMoveDirectionFromKeys();
-
-        //for touch
-        if (Input.touchCount > 0)
-        {
-            float angle = GetTouchAngle();
-            _direction = GetDirectionFromTouch(angle);
-        }
-    }
-
-    private float GetTouchAngle() 
-    {
-        Touch touch = Input.GetTouch(0);
-        Vector2 touchPos = new Vector2(touch.position.x, touch.position.y);
-        Vector2 point = _cam.ScreenToWorldPoint (touchPos);
-        Vector2 ownPos = transform.position;
-        
-        Vector2 touchDirection = point - ownPos;
-        Vector2 rightVector = new Vector2(1, ownPos.y);
-        return Vector2.SignedAngle(touchDirection, rightVector);
-    }
-
-    private MoveDirection GetDirectionFromTouch(float angle)
-    {
-        switch (angle)
-        {
-            case > -45 and < 45:
-                return MoveDirection.Up; 
-            case > -135 and < 45:
-                return MoveDirection.Left;
-            case > 45 and < 135:
-                return MoveDirection.Right;
-            case > 135 and < 180:
-            case < -135 and > -180:
-                return MoveDirection.Down;
-        }
-        return _direction;
-    }
     
-    private MoveDirection GetMoveDirectionFromKeys()
-    {
-        if (Input.GetKey(KeyCode.UpArrow) && _direction != MoveDirection.Down)
-            return MoveDirection.Up;
-            
-        if (Input.GetKey(KeyCode.DownArrow) && _direction != MoveDirection.Up)
-            return MoveDirection.Down;
-        
-        if (Input.GetKey(KeyCode.LeftArrow) && _direction != MoveDirection.Right)
-            return MoveDirection.Left;
-        
-        if (Input.GetKey(KeyCode.RightArrow) && _direction != MoveDirection.Left)
-            return MoveDirection.Right;
-        
-        return _direction;
-    }
 
-    private void MovePlayer(MoveDirection direction)
+    private void MovePlayer(PlayerInput.MoveDirection direction)
     {
         if (CheckDeath(direction))
         {
@@ -128,16 +72,16 @@ public class PlayerMovement : MonoBehaviour //ToDo split up this class into inpu
         
         switch (direction)
         {
-            case MoveDirection.Up:
+            case PlayerInput.MoveDirection.Up:
                 _currentY++;
                 break;
-            case MoveDirection.Down:
+            case PlayerInput.MoveDirection.Down:
                 _currentY--;
                 break;
-            case MoveDirection.Left:
+            case PlayerInput.MoveDirection.Left:
                 _currentX--;
                 break;
-            case MoveDirection.Right:
+            case PlayerInput.MoveDirection.Right:
                 _currentX++;
                 break;
         }
@@ -145,35 +89,27 @@ public class PlayerMovement : MonoBehaviour //ToDo split up this class into inpu
         transform.position = CurrentTile.transform.position;
     }
 
-    private bool CheckDeath(MoveDirection direction)
+    private bool CheckDeath(PlayerInput.MoveDirection direction)
     { 
         switch (direction) 
         { 
-            case MoveDirection.Up:
+            case PlayerInput.MoveDirection.Up:
                 if (CurrentTile.GridY == GameGrid.GridArray.GetLength(1) - 1)
                     return true;
                 break;
-            case MoveDirection.Down:
+            case PlayerInput.MoveDirection.Down:
                 if (CurrentTile.GridY == 0)
                     return true;
                 break;
-            case MoveDirection.Left:
+            case PlayerInput.MoveDirection.Left:
                 if (CurrentTile.GridX == 0)
                     return true;
                 break;
-            case MoveDirection.Right:
+            case PlayerInput.MoveDirection.Right:
                 if (CurrentTile.GridX == GameGrid.GridArray.GetLength(0) - 1)
                     return true;
                 break;
         }
         return false;
-    }
-    
-    private enum MoveDirection 
-    {
-        Left, 
-        Right, 
-        Up, 
-        Down
     }
 }

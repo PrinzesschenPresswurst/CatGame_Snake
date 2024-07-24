@@ -37,7 +37,7 @@ public class PlayerMovement : MonoBehaviour
         transform.position = CurrentTile.transform.position;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (_stopMovement) 
             return;
@@ -47,10 +47,9 @@ public class PlayerMovement : MonoBehaviour
         
         if (_moveTimer < moveTimerInterval)
             return;
-        _moveTimer = 0;
         
+        _moveTimer = 0;
         MovePlayer(_direction);
-
         StartCoroutine(TellBodyPartsToMove());
     }
     
@@ -61,8 +60,8 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator TellBodyPartsToMove()
     {
-        yield return new WaitForSeconds(.01f); 
-        PlayerMoved?.Invoke();
+       yield return new WaitForFixedUpdate();
+       PlayerMoved?.Invoke();
     }
     
     

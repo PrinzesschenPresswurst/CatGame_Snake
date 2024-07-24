@@ -39,7 +39,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if (_stopMovement)
+        if (_stopMovement) 
             return;
         
         RunMoveTimer();
@@ -50,14 +50,19 @@ public class PlayerMovement : MonoBehaviour
         _moveTimer = 0;
         
         MovePlayer(_direction);
-        
-        if (PlayerMoved != null) //MoveBody
-            PlayerMoved.Invoke();
+
+        StartCoroutine(TellBodyPartsToMove());
     }
     
     private void RunMoveTimer()
     {
         _moveTimer += Time.deltaTime;
+    }
+
+    IEnumerator TellBodyPartsToMove()
+    {
+        yield return new WaitForSeconds(.01f); 
+        PlayerMoved?.Invoke();
     }
     
     

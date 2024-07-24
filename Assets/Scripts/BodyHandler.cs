@@ -34,7 +34,6 @@ public class BodyHandler : MonoBehaviour
         GameObject newBody = Instantiate(body, LastBody.transform.position, quaternion.identity);
         newBody.name = "Body: " + _bodyNumber;
         BodyList.Add(newBody.GetComponent<Body>());
-        
         _bodyNumber++;
         LastBody = newBody;
     }

@@ -34,12 +34,10 @@ public class PlayerInput : MonoBehaviour
         {
             if (_swipeVector.x > 0)
             {
-                Debug.Log("swiped right");
                 _direction = MoveDirection.Right;
             }
             else
             {
-                Debug.Log("swiped left");
                 _direction = MoveDirection.Left;
             }
         }
@@ -48,12 +46,10 @@ public class PlayerInput : MonoBehaviour
         {
             if (_swipeVector.y > 0) 
             {
-                Debug.Log("swiped up");
                 _direction = MoveDirection.Up;
             }
             else 
             {
-                Debug.Log("swiped down");
                 _direction = MoveDirection.Down;
             }
         }

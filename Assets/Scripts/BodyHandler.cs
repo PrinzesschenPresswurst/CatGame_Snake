@@ -22,7 +22,7 @@ public class BodyHandler : MonoBehaviour
         BodyList = new List<Body>();
     }
     
-    private void OnTreatWasCollected()
+    private void OnTreatWasCollected(object sender, EventArgs e)
     {
         if (_isFirstBody)
         {

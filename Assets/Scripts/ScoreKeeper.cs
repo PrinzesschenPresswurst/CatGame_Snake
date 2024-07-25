@@ -24,7 +24,7 @@ public class ScoreKeeper : MonoBehaviour
         scoreText.text = ""+ Score;
     }
 
-    private void OnTreatWasCollected()
+    private void OnTreatWasCollected(object sender, EventArgs e)
     {
         Score++;
         UpdateScore();

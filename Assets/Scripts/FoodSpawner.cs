@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 public class FoodSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject treat;
-    private static Tile _spawnTile;
+    public static Tile _spawnTile { get; private set; }
 
     private void Start()
     {
@@ -16,14 +16,14 @@ public class FoodSpawner : MonoBehaviour
         Treat.TreatWasCollected += OnTreatWasCollected;
         PlayerDeathHandler.PlayerDied += OnPlayerDied;
     }
-
+    
     private void OnGridHasBeenDrawn()
     {
         PickTreatPosition();
         SpawnTreat();
     }
 
-    private void OnTreatWasCollected()
+    private void OnTreatWasCollected(object sender, EventArgs e)
     {
         PickTreatPosition();
         SpawnTreat();

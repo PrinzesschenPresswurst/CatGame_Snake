@@ -8,15 +8,14 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float moveTimerInterval = 1f;
     private float _moveTimer;
-    private int _currentX;
+    private  int _currentX;
     private int _currentY;
     private bool _stopMovement;
-
-    private static  PlayerInput.MoveDirection _direction;
-    
+    private static PlayerInput.MoveDirection _direction;
     
     public static Tile CurrentTile { get; private set; }
     public static event Action PlayerMoved;
+    public static event Action <PlayerInput.MoveDirection> PlayerAboutToMove;
     public static event Action PlayerCrashedInWall; 
     
     private void Start()
@@ -44,6 +43,8 @@ public class PlayerMovement : MonoBehaviour
         
         RunMoveTimer();
         _direction = PlayerInput.GetDirection(this.gameObject);
+        //CheckIfTreatIsUpcoming();
+        PlayerAboutToMove?.Invoke(_direction);
         
         if (_moveTimer < moveTimerInterval)
             return;
@@ -64,8 +65,6 @@ public class PlayerMovement : MonoBehaviour
        PlayerMoved?.Invoke();
     }
     
-    
-
     private void MovePlayer(PlayerInput.MoveDirection direction)
     {
         if (CheckDeath(direction))
@@ -124,4 +123,5 @@ public class PlayerMovement : MonoBehaviour
         GameGrid.GridHasBeenDrawn -= OnGridHasBeenDrawn;
         PlayerDeathHandler.PlayerDied -= OnPlayerDied;
     }
+    
 }

@@ -5,12 +5,17 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 public class Treat : MonoBehaviour
-{ 
-    public static event Action TreatWasCollected;
+{
+    public static EventHandler <TreatWasCollectedEventArgs> TreatWasCollected;
+    
+    
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (TreatWasCollected != null)
-            TreatWasCollected.Invoke();
+        TreatWasCollected?.Invoke(this, new TreatWasCollectedEventArgs { TreatPosition = transform.position });
         Destroy(this.gameObject);
+    }
+    public class TreatWasCollectedEventArgs : EventArgs
+    {
+        public Vector2 TreatPosition { get; set; }
     }
 }

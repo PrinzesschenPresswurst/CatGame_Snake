@@ -15,7 +15,6 @@ public class PlayerInput : MonoBehaviour
     private void Start()
     {
         _direction = MoveDirection.Up;
-        //_cam = Camera.main;
         
         _controls = new PlayerIputActions();
         _controls.Enable();

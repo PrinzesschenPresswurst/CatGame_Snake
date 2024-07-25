@@ -43,7 +43,6 @@ public class PlayerMovement : MonoBehaviour
         
         RunMoveTimer();
         _direction = PlayerInput.GetDirection(this.gameObject);
-        //CheckIfTreatIsUpcoming();
         PlayerAboutToMove?.Invoke(_direction);
         
         if (_moveTimer < moveTimerInterval)

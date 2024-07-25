@@ -10,7 +10,7 @@ public class PlayerEatFeedback : MonoBehaviour
     [SerializeField] private ParticleSystem eatParticleSystem;
     private Animator _animator;
     
-    void Start()
+    private void Start()
     {
         _animator = GetComponent<Animator>();
         PlayerMovement.PlayerAboutToMove += OnPlayerMoved;
@@ -25,34 +25,22 @@ public class PlayerEatFeedback : MonoBehaviour
 
     private void OnPlayerMoved(PlayerInput.MoveDirection direction)
     {
+        Dictionary<PlayerInput.MoveDirection, (int x, int y)> offsets =
+            new Dictionary<PlayerInput.MoveDirection, (int x, int y)>()
+            {
+                { PlayerInput.MoveDirection.Up, (0, -1) }, 
+                { PlayerInput.MoveDirection.Down, (0, +1) },
+                { PlayerInput.MoveDirection.Left, (+1, 0) },
+                { PlayerInput.MoveDirection.Right, (-1, 0) },
+            };
         
-        if (direction == PlayerInput.MoveDirection.Up) 
+        if (offsets.TryGetValue(direction, out var offset))
         {
-            if (PlayerMovement.CurrentTile.GridX == FoodSpawner._spawnTile.GridX && PlayerMovement.CurrentTile.GridY == FoodSpawner._spawnTile.GridY -1)
-            {
+            int spawnTileGridX = FoodSpawner._spawnTile.GridX + offset.x;
+            int spawnTileGridY = FoodSpawner._spawnTile.GridY + offset.y;
+            
+            if ( PlayerMovement.CurrentTile.GridX == spawnTileGridX && PlayerMovement.CurrentTile.GridY == spawnTileGridY)
                 PlayEatAnimation();
-            }
-        }
-        if (direction == PlayerInput.MoveDirection.Down) 
-        {
-            if (PlayerMovement.CurrentTile.GridX == FoodSpawner._spawnTile.GridX && PlayerMovement.CurrentTile.GridY == FoodSpawner._spawnTile.GridY +1)
-            {
-                PlayEatAnimation();
-            }
-        }
-        if (direction == PlayerInput.MoveDirection.Left) 
-        {
-            if (PlayerMovement.CurrentTile.GridX == FoodSpawner._spawnTile.GridX +1 && PlayerMovement.CurrentTile.GridY == FoodSpawner._spawnTile.GridY)
-            {
-                PlayEatAnimation();
-            }
-        }
-        if (direction == PlayerInput.MoveDirection.Right) 
-        {
-            if (PlayerMovement.CurrentTile.GridX == FoodSpawner._spawnTile.GridX -1 && PlayerMovement.CurrentTile.GridY == FoodSpawner._spawnTile.GridY)
-            {
-                PlayEatAnimation();
-            }
         }
     }
 
@@ -68,7 +56,6 @@ public class PlayerEatFeedback : MonoBehaviour
         _animator.SetBool("isEating", false);
     }
     
-
     private void OnPlayerDied()
     {
         PlayerMovement.PlayerAboutToMove -= OnPlayerMoved;

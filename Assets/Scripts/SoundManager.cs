@@ -11,6 +11,7 @@ public class SoundManager : MonoBehaviour
    [SerializeField] private AudioClip loseSound;
    [SerializeField] private AudioClip eatSound;
    [SerializeField] private AudioClip crashSound;
+   [SerializeField] private AudioClip achievementSound;
    private AudioSource _audioSource;
    
    private void Awake()
@@ -31,6 +32,12 @@ public class SoundManager : MonoBehaviour
       PlayerDeathHandler.PlayerDied += OnPlayerDied;
       Treat.TreatWasCollected += OnTreatWasCollected;
       GameOverPopup.EndPopupOpened += OnEndPopupOpened;
+      AchievementTracker.AchievementUnlocked += OnAchievementUnlocked;
+   }
+
+   private void OnAchievementUnlocked(object sender, EventArgs e)
+   {
+      _audioSource.PlayOneShot(achievementSound);
    }
 
    private void OnEndPopupOpened(object sender, EventArgs e)

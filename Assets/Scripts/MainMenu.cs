@@ -8,11 +8,13 @@ public class MainMenu : MonoBehaviour
 {
     [SerializeField] private Canvas tutorialCanvas;
     [SerializeField] private Canvas menuCanvas;
+    [SerializeField] private Canvas settingsPopupCanvas;
     private int _tutorialInt;
     
     private void Start()
     {
         tutorialCanvas.gameObject.SetActive(false);
+        settingsPopupCanvas.gameObject.SetActive(false);
         menuCanvas.gameObject.SetActive(true);
         Debug.Log("int: "+ _tutorialInt);
     }
@@ -47,7 +49,17 @@ public class MainMenu : MonoBehaviour
     
     public void PressMenuButton()
     {
-        Debug.Log("Menu button pressed");
+        settingsPopupCanvas.gameObject.SetActive(true);
+        menuCanvas.gameObject.SetActive(false);
+    }
+
+    public void ResetPrefs()
+    {
         PlayerPrefs.DeleteAll();
+    }
+    public void CloseSettingsMenu()
+    {
+        settingsPopupCanvas.gameObject.SetActive(false);
+        menuCanvas.gameObject.SetActive(true);
     }
 }
